@@ -1,0 +1,42 @@
+Alice, real-time piping console outputs to the web
+==================================================
+
+Examples
+--------
+
+.. code-block:: bash
+
+   python train_lstm.py | alice --path $USER/$JOB_ID
+
+now on `https://alice.io/username/job_id <>`__, you will be able to see
+the console at real time.
+
+Configurations
+--------------
+
+There are a few ways to configure ``alice``. Through command line:
+
+.. code-block:: bash
+
+   usage: alice [-h] [--path PATH] [-q] [-i IP] [--port PORT] [-d DELAY]
+                [-u USERNAME] [--token TOKEN]
+
+   optional arguments:
+     -h, --help            show this help message and exit
+     --path                specify the path to log to on the server
+     -q, --quiet           disable stdin pass-through
+     -i, --ip              host
+     --port                server port
+     -d, --delay           delay before starting to send data
+     -u, --username        username for the server
+     --token               access_token
+
+Through environment variables, you can add the following to your
+`~/.profile <~/.profile>`__.
+
+::
+
+   export ALICE_USERNAME=""
+   export ALICE_TOKEN=""
+   export ALICE_HOST=localhost
+   export ALICE_PORT=l337
