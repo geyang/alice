@@ -1,5 +1,6 @@
 import asyncio
 import yaml
+import sys
 
 block_size = 64
 
@@ -20,6 +21,7 @@ async def handle_echo(reader, writer):
         message = data.decode()
         # addr = writer.get_extra_info('peername')
         print(message, end="")
+        sys.stdout.flush()
 
     print("Closed the connection")
     writer.close()
