@@ -21,7 +21,7 @@ setup(name="alice",
           "Programming Language :: Python :: 3"
       ],
       packages=find_packages(),
-      install_requires=["asyncio"],
+      install_requires=[],
       entry_points={
           'console_scripts': ['alice=alice.cli:main'],
       }

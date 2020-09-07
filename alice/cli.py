@@ -11,33 +11,15 @@ from textwrap import dedent
 
 import yaml
 
-RECV_BUFFER_SIZE = 64
-READ_BUFFER_SIZE = 64
 SOCKET_TIMEOUT = 10  # seconds
 
 
-def read1(stream):
-    if hasattr(stream, 'read1'):
-        return stream.read1(READ_BUFFER_SIZE)
-    else:
-        # XXX is there a better way to do this without doing a bunch of syscalls?
-        buf = []
-        while len(buf) < READ_BUFFER_SIZE:
-            ready, _, _ = select.select([stream], [], [], 0)  # poll
-            if not ready:
-                break
-            data = stream.read(1)
-            if not data:
-                # even if we hit this case, it's fine: once we get to EOF, the
-                # fd is always ready (and will always return "")
-                break
-            buf.append(data)
-        return ''.join(buf)
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--path', default="/", help='disable stdin pass-through')
+    parser.add_argument('--path', default="/", help='target path to write the file')
+    parser.add_argument('-b', '--buffer-size', type=int, default=64, help='size of the buffer')
     parser.add_argument('-q', '--quiet', action='store_true', help='disable stdin pass-through')
     parser.add_argument('-i', '--ip', default='localhost', help='host')
     parser.add_argument('--port', type=int, default='8888', help='server port')
@@ -53,7 +35,7 @@ def main():
 HEADER_DELIM = "\n---\n"
 
 
-def alice(ip, port, path=None, username=None, token=None, delay=None, quiet=False, ):
+def alice(ip, port, path=None, username=None, token=None, delay=None, quiet=False, buffer_size=64):
     if hasattr(sys.stdin, 'buffer'):
         stdin = sys.stdin.buffer
     else:
@@ -61,6 +43,24 @@ def alice(ip, port, path=None, username=None, token=None, delay=None, quiet=Fals
 
     stdout = sys.stdout.buffer if hasattr(sys.stdout, 'buffer') else sys.stdout
     stderr = sys.stderr.buffer if hasattr(sys.stderr, 'buffer') else sys.stderr
+
+    def read1(stream):
+        if hasattr(stream, 'read1'):
+            return stream.read1(buffer_size)
+        else:
+            # XXX is there a better way to do this without doing a bunch of syscalls?
+            buf = []
+            while len(buf) < buffer_size:
+                ready, _, _ = select.select([stream], [], [], 0)  # poll
+                if not ready:
+                    break
+                data = stream.read(1)
+                if not data:
+                    # even if we hit this case, it's fine: once we get to EOF, the
+                        # fd is always ready (and will always return "")
+                    break
+                buf.append(data)
+            return ''.join(buf)
 
     try:
         conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -94,7 +94,7 @@ def alice(ip, port, path=None, username=None, token=None, delay=None, quiet=Fals
                     stdout.flush()
             elif conn in ready:
                 conn.settimeout(SOCKET_TIMEOUT)
-                data = conn.recv(RECV_BUFFER_SIZE)
+                data = conn.recv(buffer_size)
                 print(data)
                 stderr.write(data)
                 stderr.flush()
