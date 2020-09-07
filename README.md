@@ -1,3 +1,5 @@
+<img src="figures/mad-hatter.png" align="right" width="200px"/>
+
 # Alice, real-time piping console outputs to the web
 
 ## Examples
