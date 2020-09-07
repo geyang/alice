@@ -10,6 +10,22 @@ python train_lstm.py | alice --path $USER/$JOB_ID
 
 now on [https://alice.io/username/job_id](), you will be able to see the console at real time.
 
+## Installation
+
+I am currently waiting for the `pypi` package name `alice`. 
+
+```bash
+pip install alice
+```
+
+before then, you can install directly from this git repo
+
+```bash
+pip install git+https://github.com/geyang/alice.git
+```
+
+
+
 ## Configurations
 
 There are a few ways to configure `alice`. Through command line:
