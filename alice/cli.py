@@ -35,7 +35,7 @@ def main():
 HEADER_DELIM = "\n---\n"
 
 
-def alice(ip, port, path=None, username=None, token=None, delay=None, quiet=False, buffer_size=64):
+def alice(ip, port, path=None, username=None, token=None, delay=None, quiet=False, buffer_size=64, codec=None):
     if hasattr(sys.stdin, 'buffer'):
         stdin = sys.stdin.buffer
     else:
@@ -74,6 +74,8 @@ def alice(ip, port, path=None, username=None, token=None, delay=None, quiet=Fals
             header['username'] = username
         if token:
             header['access_token'] = token
+        if codec:
+            header['codec'] = codec
 
         header_str = yaml.dump(header) + HEADER_DELIM
         conn.sendall(header_str.encode())
